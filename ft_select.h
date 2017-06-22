@@ -15,6 +15,7 @@
 
 #include "libft/libft.h"
 #include "libraries/ft_printf/ft_printf.h"
+#include "libraries/ft_printe/ft_printe.h"
 #include <termcap.h>
 #include <sys/termios.h>
 #include <sys/ioctl.h>
@@ -22,5 +23,36 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
+
+typedef struct		s_args
+{
+	char			*arg;
+	size_t			arg_size;
+	int				head;
+	int				cursor;
+	int				selected;
+	struct s_args	*next;
+	struct s_args	*prev;
+}					t_args;
+
+typedef struct		s_cap
+{
+	char			*cm;
+	char			*cl;
+	char			*us;
+	char			*ue;
+	char			*mr;
+	char			*me;
+	char			*kl;
+	char			*kr;
+}					t_cap;
+
+t_cap g_caps;
+
+
+void	ft_print_handler(t_cap caps, t_args *args);
+
+
+
 
 #endif

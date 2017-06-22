@@ -25,6 +25,6 @@ void	ft_putchare(char c)
 
 int		ft_fputchar(int c)
 {
-	write(1, &c, 1);
+	write(2, &c, 1);
 	return (1);
 }
