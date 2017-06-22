@@ -224,7 +224,7 @@ void	ft_testprint(t_cap caps, t_args *args)
 	t_args *head;
 
 	head = args;
-
+	int max;
 	row = 1;
 	col = 1;
 	ft_width(head, &width);
@@ -233,6 +233,7 @@ void	ft_testprint(t_cap caps, t_args *args)
 		return ;
 //	if (width >= win.ws_xpixel || win.ws_row < 5)
 //		return ;
+	max = win.ws_row - 4
 	while (args->cursor == 0)
 		args = args->next;
 	//printf("y = %d\n", args->y);
