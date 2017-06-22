@@ -31,6 +31,8 @@ typedef struct		s_args
 	int				head;
 	int				cursor;
 	int				selected;
+	int				x;
+	int				y;
 	struct s_args	*next;
 	struct s_args	*prev;
 }					t_args;
@@ -47,11 +49,18 @@ typedef struct		s_cap
 	char			*kr;
 }					t_cap;
 
+typedef struct		s_sig
+{
+	t_cap			caps;
+	t_args			args;
+}					t_sig;
+t_sig	g_sig;
 t_cap g_caps;
 
 
 void	ft_print_handler(t_cap caps, t_args *args);
-
+void	ft_width(t_args *head, size_t *width);
+void	ft_set_win(struct winsize *win);
 
 
 
