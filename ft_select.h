@@ -52,9 +52,10 @@ typedef struct		s_cap
 typedef struct		s_sig
 {
 	t_cap			caps;
-	t_args			args;
+	t_args			*args;
 }					t_sig;
 t_sig	g_sig;
+
 t_cap g_caps;
 
 

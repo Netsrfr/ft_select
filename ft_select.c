@@ -198,18 +198,22 @@ int	ft_position(t_args *head, struct winsize win, size_t width)
 	col = 1;
 	if (width >= win.ws_xpixel || win.ws_row < 5)
 		return (0);
+
 	while (head->next->head == 0)
 	{
-		col = 1;
-		while (head->next->head == 0 && col * width < win.ws_xpixel)
+		while (head->next->head == 0 && (col * width) < win.ws_xpixel)
 		{
 			head->x = col;
 			head->y = row;
 			head = head->next;
 			col++;
 		}
-		row++;
-	}
+		if (col * width >= win.ws_xpixel)
+		{
+			row++;
+			col = 1;
+		}
+		}
 	head->x = col;
 	head->y = row;
 	return (1);
@@ -220,65 +224,48 @@ void	ft_testprint(t_cap caps, t_args *args)
 	struct winsize	win;
 	size_t width;
 	int	row;
-	int col;
+	int start;
 	t_args *head;
-
 	head = args;
-	int max;
+
 	row = 1;
-	col = 1;
+	start = 1;
 	ft_width(head, &width);
 	ft_set_win(&win);
 	if (ft_position(head, win, width) == 0)
 		return ;
-//	if (width >= win.ws_xpixel || win.ws_row < 5)
-//		return ;
-	max = win.ws_row - 4
 	while (args->cursor == 0)
 		args = args->next;
-	//printf("y = %d\n", args->y);
-	//printf("ypixel = %hu\n", win.ws_ypixel);
-	//printf("test %d", (win.ws_ypixel / 2));
-	// = ((int)win.ws_ypixel / (args->y * 2)) > 1 ? ((int)win.ws_ypixel / (args->y / 2)) : 1;
-//	ft_printe("row = %d\n", row);
-	row = 3;
-	//TODO: Row start
-	while (head->y != row)
-		head = head->next;
-	while (head->next->head == 0)
+	if (args->y > win.ws_ypixel)
+	{
+		start    = ((args->y - win.ws_ypixel) + 1);
+		row = start;
+		while (head->y != start)
+			head = head->next;
+	}
+	while (head->next->head == 0 && row - start < win.ws_ypixel - 1)
 	{
 		while (head->next->head == 0 && head->y == row)
 		{
-	//		if (row * 2 <= win.ws_ypixel + 1)
 			ft_print_arg(caps, *head, width);
 			head = head->next;
 		}
 		row++;
-//		if (col * width >= win.ws_xpixel)
-			tputs(tgoto(caps.cm, 8, (row + 1)), 1, ft_fputchar);
+		if (head->y == row)
+			tputs(tgoto(caps.cm, 8, (((row - start) + 2))), 1, ft_fputchar);
 	}
-//	printf("col = %d | width = %lu | xpixel = %hu\n", col, width, win.ws_xpixel);
-//	if (col * width > win.ws_xpixel)
-	//	tputs(tgoto(caps.cm, 8, ((row + 1) * 2)), 1, ft_fputchar);
-	head->x = col;
-	head->y = row;
-//	if (row * 2 <= win.ws_ypixel + 1)
-		ft_print_arg(caps, *head, width);
+	ft_print_arg(caps, *head, width);
 
 }
 
 void	ft_print_handler(t_cap caps, t_args *args)
 {
+	g_sig.args = args;
+
 	tputs(tgoto(caps.cm, 8, 2), 1, ft_fputchar);
 	while (args->head == 0)
 		args = args->next;
 	ft_testprint(caps, args);
-//	while (args->next->head == 0)
-//	{
-//		ft_print_arg(caps, *args);
-//		args = args->next;
-//	}
-//	ft_print_arg(caps, *args);
 }
 
 void ft_init_display(t_cap caps)
@@ -314,8 +301,11 @@ void ft_init_display(t_cap caps)
 
 void	ft_signal(int sig)
 {
-	ft_init_display(g_sig.caps);
-	ft_print_handler(g_sig.caps, &g_sig.args);
+	if (sig == SIGWINCH)
+	{
+		ft_init_display(g_sig.caps);
+		ft_print_handler(g_sig.caps, g_sig.args);
+	}
 }
 
 void	ft_allocate_capabilities(t_cap *caps)
@@ -362,7 +352,7 @@ int main(int argc, char **argv)
 
 	ft_termios();
 	g_sig.caps = caps;
-	g_sig.args = list;
+	//g_sig.args = &list;
 	g_caps = caps;
 	ft_init_display(caps);
 	ft_print_handler(caps, &list);
