@@ -22,29 +22,45 @@ void	ft_termios()
 	term.c_cc[VMIN] = 0;
 }
 
-void	ft_right(t_cap caps, t_args *args)
-{
-	while (args->cursor == 0)
-		args = args->next;
-	args->cursor = 0;
-	args->next->cursor = 1;
-	ft_print_handler(caps, args);
-}
-
-void	ft_left(t_cap caps, t_args *args)
-{
-	while (args->cursor == 0)
-		args = args->prev;
-	args->cursor = 0;
-	args->prev->cursor = 1;
-	ft_print_handler(caps, args);
-}
-
 void	ft_select(t_cap caps, t_args *args)
 {
 	while (args->cursor == 0)
 		args = args->next;
 	args->selected = args->selected == 0 ? 1 : 0;
+	ft_print_handler(caps, args);
+}
+
+void	ft_right(t_cap caps, t_args *args)
+{
+	int				row;
+
+	while (args->cursor == 0)
+		args = args->next;
+	args->cursor = 0;
+	row = args->y;
+	args = args->next;
+	while (args->y != row)
+	{
+		args = args->next;
+	}
+	args->cursor = 1;
+	ft_print_handler(caps, args);
+}
+
+void	ft_left(t_cap caps, t_args *args)
+{
+	int				row;
+
+	while (args->cursor == 0)
+		args = args->next;
+	args->cursor = 0;
+	row = args->y;
+	args = args->prev;
+	while (args->y != row)
+	{
+		args = args->prev;
+	}
+	args->cursor = 1;
 	ft_print_handler(caps, args);
 }
 
@@ -116,8 +132,6 @@ t_args	*ft_link(void const *content, size_t content_size)
 	link->arg = (void*)content;
 	if (content)
 	{
-//		if (!(link->arg = ft_memalloc(content_size)))
-//			return (0);
 		ft_memcpy(link->arg, content, content_size);
 		link->arg_size = content_size;
 	}
@@ -178,27 +192,22 @@ void	ft_width(t_args *head, size_t *width)
 		head = head->next;
 	}
 	*width += 4;
-	//return (width);
 }
 
 void	ft_set_win(struct winsize *win)
 {
 	ioctl(0, TIOCGWINSZ, win);
-	win->ws_xpixel = (unsigned short)(win->ws_col > 12 ? (win->ws_col - 12) : 0);
+	win->ws_xpixel = (unsigned short)(win->ws_col > 11 ? (win->ws_col - 11) : 0);
 	win->ws_ypixel = (unsigned short)(win->ws_col > 4 ? (win->ws_row - 4) : 0);
-
 }
 
-int	ft_position(t_args *head, struct winsize win, size_t width)
+void	ft_position(t_args *head, struct winsize win, size_t width)
 {
 	int row;
 	int col;
 
 	row = 1;
 	col = 1;
-	if (width >= win.ws_xpixel || win.ws_row < 5)
-		return (0);
-
 	while (head->next->head == 0)
 	{
 		while (head->next->head == 0 && (col * width) < win.ws_xpixel)
@@ -213,49 +222,53 @@ int	ft_position(t_args *head, struct winsize win, size_t width)
 			row++;
 			col = 1;
 		}
-		}
+	}
 	head->x = col;
 	head->y = row;
-	return (1);
 }
 
-void	ft_testprint(t_cap caps, t_args *args)
+void	ft_start(t_args **head, struct winsize win, int *start)
+{
+	t_args	*temp;
+
+	temp = *head;
+	*start = 1;
+	while (temp->cursor == 0)
+		temp = temp->next;
+	if (temp->y > win.ws_ypixel)
+	{
+		*start = ((temp->y - win.ws_ypixel) + 1);
+		while ((*head)->y != *start)
+			*head = (*head)->next;
+	}
+}
+
+void	ft_layout(t_cap caps, t_args *args)
 {
 	struct winsize	win;
 	size_t width;
 	int	row;
 	int start;
-	t_args *head;
-	head = args;
 
-	row = 1;
-	start = 1;
-	ft_width(head, &width);
+	ft_width(args, &width);
 	ft_set_win(&win);
-	if (ft_position(head, win, width) == 0)
+	if (width >= win.ws_xpixel || win.ws_row < 5)
 		return ;
-	while (args->cursor == 0)
-		args = args->next;
-	if (args->y > win.ws_ypixel)
+	ft_position(args, win, width);
+	ft_start(&args, win, &start);
+	row = start;
+	while (args->next->head == 0 && row - start < win.ws_ypixel - 1)
 	{
-		start    = ((args->y - win.ws_ypixel) + 1);
-		row = start;
-		while (head->y != start)
-			head = head->next;
-	}
-	while (head->next->head == 0 && row - start < win.ws_ypixel - 1)
-	{
-		while (head->next->head == 0 && head->y == row)
+		while (args->next->head == 0 && args->y == row)
 		{
-			ft_print_arg(caps, *head, width);
-			head = head->next;
+			ft_print_arg(caps, *args, width);
+			args = args->next;
 		}
 		row++;
-		if (head->y == row)
+		if (args->y == row)
 			tputs(tgoto(caps.cm, 8, (((row - start) + 2))), 1, ft_fputchar);
 	}
-	ft_print_arg(caps, *head, width);
-
+	ft_print_arg(caps, *args, width);
 }
 
 void	ft_print_handler(t_cap caps, t_args *args)
@@ -265,7 +278,7 @@ void	ft_print_handler(t_cap caps, t_args *args)
 	tputs(tgoto(caps.cm, 8, 2), 1, ft_fputchar);
 	while (args->head == 0)
 		args = args->next;
-	ft_testprint(caps, args);
+	ft_layout(caps, args);
 }
 
 void ft_init_display(t_cap caps)
@@ -277,10 +290,9 @@ void ft_init_display(t_cap caps)
 	ioctl(0, TIOCGWINSZ, &win);
 	tputs(tgoto(caps.cm, 0, 0), 1, ft_fputchar);
 	ft_printe("%s\033[40m%s\033[44m\033[37m", caps.me, caps.cl);
-	while (i < win.ws_col)
+	while (i++ < win.ws_col)
 	{
 		ft_printe(" ");
-		i++;
 		if (i == (win.ws_col/2 - 4))
 		{
 			ft_printe("ft_select");
@@ -322,9 +334,15 @@ void	ft_allocate_capabilities(t_cap *caps)
 
 void	ft_capabilities(t_cap *caps)
 {
+	int test;
 	char *buffer = ft_memalloc(2048);
 	ft_allocate_capabilities(caps);
-	tgetent(buffer, getenv("TERM"));
+	if(!(tgetent(buffer, getenv("TERM"))))
+	{
+		free(buffer);
+		ft_printe("ft_select: error: terminal type invalid or TERM does not exist\n");
+		exit(0);
+	}
 	caps->cm = tgetstr("cm", &caps->cm);
 	caps->cl = tgetstr("cl", &caps->cl);
 	caps->us = tgetstr("us", &caps->us);
@@ -348,11 +366,8 @@ int main(int argc, char **argv)
 		ft_printe("ft_select: requires one or more arguments\n");
 		exit(0);
 	}
-	//list = ft_memalloc(sizeof(t_args));
-
 	ft_termios();
 	g_sig.caps = caps;
-	//g_sig.args = &list;
 	g_caps = caps;
 	ft_init_display(caps);
 	ft_print_handler(caps, &list);
