@@ -334,10 +334,9 @@ void	ft_allocate_capabilities(t_cap *caps)
 
 void	ft_capabilities(t_cap *caps)
 {
-	int test;
 	char *buffer = ft_memalloc(2048);
 	ft_allocate_capabilities(caps);
-	if(!(tgetent(buffer, getenv("TERM"))))
+	if((tgetent(buffer, getenv("TERM")) == -1))
 	{
 		free(buffer);
 		ft_printe("ft_select: error: terminal type invalid or TERM does not exist\n");
