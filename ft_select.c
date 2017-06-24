@@ -17,6 +17,7 @@ void	ft_termios()
 	struct termios term;
 
 	tcgetattr(STDIN_FILENO, &term);
+	tcgetattr(STDIN_FILENO, &g_sig.term);
 	term.c_lflag &= ~(ICANON|ECHO);
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &term);
 	term.c_cc[VMIN] = 0;
@@ -257,7 +258,7 @@ void	ft_layout(t_cap caps, t_args *args)
 	ft_position(args, win, width);
 	ft_start(&args, win, &start);
 	row = start;
-	while (args->next->head == 0 && row - start < win.ws_ypixel - 1)
+	while (args->next->head == 0 && row - start < win.ws_ypixel)
 	{
 		while (args->next->head == 0 && args->y == row)
 		{
@@ -267,8 +268,11 @@ void	ft_layout(t_cap caps, t_args *args)
 		row++;
 		if (args->y == row)
 			tputs(tgoto(caps.cm, 8, (((row - start) + 2))), 1, ft_fputchar);
+		if (args->next->head == 1 && args->y - start < win.ws_ypixel)
+			ft_print_arg(caps, *args, width);
 	}
-	ft_print_arg(caps, *args, width);
+	ft_printe("%s", caps.ce);
+
 }
 
 void	ft_print_handler(t_cap caps, t_args *args)
@@ -299,19 +303,47 @@ void ft_init_display(t_cap caps)
 			i = i + 9;
 		}
 	}
-	i = 0;
+	i = 83;
 	tputs(tgoto(caps.cm, 0, win.ws_col), 1, ft_fputchar);
-	ft_printe("%s\033[44m\033[37m", caps.me);
-	while (i < win.ws_col)
+	ft_printe("%s\033[44m\033[37m%s", caps.me, caps.ce);
+	tputs(tgoto(caps.cm, 4, win.ws_col), 1, ft_fputchar);
+	if (win.ws_col >= 18)
 	{
-		ft_printe(" ");
-		i++;
+		tputs(tgoto(caps.cm, win.ws_col - 14, win.ws_row), 1, ft_fputchar);
+		ft_printe("ESC = EXIT");
 	}
-	ft_printe("%s\033[40m\033[33m", caps.me);
+	if (win.ws_col >= 56)
+	{
+		tputs(tgoto(caps.cm, 4, win.ws_row), 1, ft_fputchar);
+		ft_printe("NAVIGATION = UP, DOWN, LEFT, RIGHT");
+	}
+	if (win.ws_col >= 94)
+	{
+		tputs(tgoto(caps.cm, ((win.ws_col - 90) / 3) + 41, win.ws_row), 1, ft_fputchar);
+		ft_printe("SELECT = SPACE");
+		tputs(tgoto(caps.cm, ((win.ws_col - 90) / 3) * 2 + 59, win.ws_row), 1, ft_fputchar);
+		ft_printe("RETURN = CONFIRM");
+
+	}
+	if (win.ws_col >= 42)
+
+//	while (i < win.ws_col)
+//	{
+//		ft_printe(" ");
+//		i++;
+//	}
+	ft_printe("%s%s\033[40m\033[33m", caps.me, caps.vi);
 }
 
-
 void	ft_signal(int sig)
+{
+	printf("TEST\n");
+	sleep(1);
+	kill(0, SIGTSTP);
+
+}
+
+void	ft_sigwinch(int sig)
 {
 	if (sig == SIGWINCH)
 	{
@@ -322,13 +354,17 @@ void	ft_signal(int sig)
 
 void	ft_allocate_capabilities(t_cap *caps)
 {
+
 	caps->cl = ft_memalloc(16);
+	caps->ce = ft_memalloc(16);
 	caps->us = ft_memalloc(16);
 	caps->me = ft_memalloc(16);
-	caps->cm = ft_memalloc(16);
 	caps->mr = ft_memalloc(16);
+	caps->vi = ft_memalloc(16);
 	caps->kr = ft_memalloc(16);
 	caps->kl = ft_memalloc(16);
+	caps->cm = ft_memalloc(16);
+
 
 }
 
@@ -344,19 +380,39 @@ void	ft_capabilities(t_cap *caps)
 	}
 	caps->cm = tgetstr("cm", &caps->cm);
 	caps->cl = tgetstr("cl", &caps->cl);
+	caps->ce = tgetstr("ce", &caps->ce);
 	caps->us = tgetstr("us", &caps->us);
 	caps->me = tgetstr("me", &caps->me);
 	caps->mr = tgetstr("mr", &caps->mr);
+	caps->vi = tgetstr("vi", &caps->vi);
 	caps->kl = tgetstr("kl", &caps->kl);
 	caps->kr = tgetstr("kr", &caps->kr);
 }
+
+void	ft_continue(int sig)
+{
+	ft_init_display(g_sig.caps);
+	ft_print_handler(g_sig.caps, g_sig.args);
+	ft_read(g_sig.caps, g_sig.args);
+}
+
+//TODO: Initiate termios on SIGCONT
+//TODO: Set sigaction SIGTSTP on SIGCONT
+//TODO: Restore terminal settings on SIGTSTP
 
 int main(int argc, char **argv)
 {
 	t_args list;
 	t_cap	caps;
 
-	signal(SIGWINCH, ft_signal);
+	struct sigaction test;
+	test.sa_handler = ft_signal;
+	test.sa_flags = SA_RESETHAND;
+	test.sa_mask = SIGTSTP;
+	sigaction(SIGTSTP, &test, NULL);
+
+	signal(SIGWINCH, ft_sigwinch);
+	signal(SIGCONT, ft_continue);
 	ft_capabilities(&caps);
 	if (argc >= 2)
 		ft_list(argv, &list);

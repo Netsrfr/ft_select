@@ -19,6 +19,7 @@
 #include <termcap.h>
 #include <sys/termios.h>
 #include <sys/ioctl.h>
+#include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -41,10 +42,12 @@ typedef struct		s_cap
 {
 	char			*cm;
 	char			*cl;
+	char			*ce;
 	char			*us;
 	char			*ue;
 	char			*mr;
 	char			*me;
+	char			*vi;
 	char			*kl;
 	char			*kr;
 }					t_cap;
@@ -53,6 +56,7 @@ typedef struct		s_sig
 {
 	t_cap			caps;
 	t_args			*args;
+	struct termios	term;
 }					t_sig;
 t_sig	g_sig;
 
