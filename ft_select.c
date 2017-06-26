@@ -391,6 +391,7 @@ void	ft_capabilities(t_cap *caps)
 
 void	ft_continue(int sig)
 {
+	ft_termios();
 	ft_init_display(g_sig.caps);
 	ft_print_handler(g_sig.caps, g_sig.args);
 	ft_read(g_sig.caps, g_sig.args);
@@ -400,17 +401,21 @@ void	ft_continue(int sig)
 //TODO: Set sigaction SIGTSTP on SIGCONT
 //TODO: Restore terminal settings on SIGTSTP
 
+void	ft_action(void)
+{
+	struct sigaction action;
+	action.sa_handler = ft_signal;
+	action.sa_flags = SA_RESETHAND;
+	action.sa_mask = SIGTSTP;
+	sigaction(SIGTSTP, &action, NULL);
+}
+
 int main(int argc, char **argv)
 {
 	t_args list;
 	t_cap	caps;
 
-	struct sigaction test;
-	test.sa_handler = ft_signal;
-	test.sa_flags = SA_RESETHAND;
-	test.sa_mask = SIGTSTP;
-	sigaction(SIGTSTP, &test, NULL);
-
+	ft_action();
 	signal(SIGWINCH, ft_sigwinch);
 	signal(SIGCONT, ft_continue);
 	ft_capabilities(&caps);
