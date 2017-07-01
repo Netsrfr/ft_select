@@ -94,5 +94,5 @@ set(SOURCE_FILES ft_select.c ft_select.h
         libraries/ft_printe/ft_putwidth_e.c
         libraries/get_next_line/get_next_line.c
         libraries/get_next_line/get_next_line.h
-        libft/ft_split_whitespaces.c ft_select.c ft_select.h arrows.c keys.c utility.c termcaps.c display.c)
+        libft/ft_split_whitespaces.c ft_select.c ft_select.h arrows.c keys.c utility.c termcaps.c display.c print.c)
 add_executable(ft_select ${SOURCE_FILES})

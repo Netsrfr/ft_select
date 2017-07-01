@@ -20,7 +20,7 @@ void	ft_termios()
 	tcgetattr(STDIN_FILENO, &g_sig.term);
 	term.c_lflag &= ~(ICANON|ECHO);
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &term);
-	term.c_cc[VMIN] = 0;
+//	term.c_cc[VMIN] = 0;
 }
 
 static void	ft_allocate_capabilities(t_cap *caps)
