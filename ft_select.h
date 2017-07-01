@@ -63,7 +63,7 @@ t_sig	g_sig;
 
 t_cap g_caps;
 
-
+void	ft_exit(t_cap caps, t_args *args);
 void	ft_print_handler(t_cap caps, t_args *args);
 void	ft_width(t_args *head, size_t *width);
 void	ft_set_win(struct winsize *win);
@@ -73,6 +73,14 @@ void	ft_read(t_cap caps, t_args *args);
 
 void	ft_arrows(char line, t_cap caps, t_args *args);
 
+void	ft_select(t_cap caps, t_args *args);
+void	ft_delete(t_cap caps, t_args *args);
+void	ft_return(t_cap caps, t_args *args);
 
+/*
+** utility.c
+*/
+void	ft_cursor(t_args **args);
+void	ft_head(t_args **args);
 
 #endif

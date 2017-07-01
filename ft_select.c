@@ -23,13 +23,7 @@ void	ft_termios()
 	term.c_cc[VMIN] = 0;
 }
 
-void	ft_select(t_cap caps, t_args *args)
-{
-	while (args->cursor == 0)
-		args = args->next;
-	args->selected = args->selected == 0 ? 1 : 0;
-	ft_print_handler(caps, args);
-}
+
 
 void	ft_exit(t_cap caps, t_args *args)
 {
@@ -41,62 +35,9 @@ void	ft_exit(t_cap caps, t_args *args)
 	}
 }
 
-void	ft_delete(t_cap caps, t_args *args)
-{
-	t_args	*ptr;
 
-	while (args->cursor == 0)
-		args = args->next;
-	if (args->next == args)
-		ft_exit(caps, args);
-	else
-	{
-		args->next->prev = args->prev;
-		args->prev->next = args->next;
-//		printf("args->next = %s", args->next->arg);
-		//printf("args pn = %s | args np = %s\n", args->prev->next->arg, args->next->prev->arg);
-		//sleep(2);
-		if (args->head == 1)
-		{
-			args->cursor = 0;
-			args->head = 0;
-			args->next->cursor = 1;
-			args->next->head = 1;
-			ptr = args->next;
-//			printf("args pn = %s | args np = %s\n", args->prev->next->arg, args->next->prev->arg);
-//			sleep(3);
-			free(args);
-		}
-		else
-		{
-			args->prev->cursor = 1;
-			ptr = args->prev;
-			//free(args->arg);
-			//free(args);
-		}
-	}
-	while (ptr->head == 0)
-		ptr = ptr->next;
-	ft_init_display(caps);
-	ft_print_handler(caps, ptr);
-}
 
-void	ft_return(t_cap caps, t_args *args)
-{
-	while (args-> head == 0)
-		args = args->next;
-	if (args->selected == 1)
-		ft_printf("%s ", args->arg);
-	if (args->next == args)
-		exit(0);
-	while (args->next->head == 0)
-	{
-		if (args->selected == 1)
-			ft_printf("%s ", args->arg);
-		args = args->next;
-	}
-	exit(0);
-}
+
 
 void	ft_read(t_cap caps, t_args *args)
 {
@@ -235,8 +176,7 @@ void	ft_start(t_args **head, struct winsize win, int *start)
 
 	temp = *head;
 	*start = 1;
-	while (temp->cursor == 0)
-		temp = temp->next;
+	ft_cursor(&temp);
 	if (temp->y > win.ws_ypixel)
 	{
 		*start = ((temp->y - win.ws_ypixel) + 1);
@@ -283,8 +223,7 @@ void	ft_print_handler(t_cap caps, t_args *args)
 	g_sig.args = args;
 
 	tputs(tgoto(caps.cm, 8, 2), 1, ft_fputchar);
-	while (args->head == 0)
-		args = args->next;
+	ft_head(&args);
 	ft_layout(caps, args);
 }
 

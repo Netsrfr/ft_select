@@ -12,7 +12,7 @@
 
 NAME = ft_select
 
-C_FILES = ft_select.c arrows.c
+C_FILES = ft_select.c arrows.c keys.c utility.c
 
 LIBFT		=	./libft/libft.a
 PRINTF		=	./libraries/ft_printf/libftprintf.a
