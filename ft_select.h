@@ -74,8 +74,14 @@ void	ft_read(t_cap caps, t_args *args);
 void	ft_arrows(char line, t_cap caps, t_args *args);
 
 void	ft_select(t_cap caps, t_args *args);
-void	ft_delete(t_cap caps, t_args *args);
+void	ft_delete(t_cap caps, t_args **args);
 void	ft_return(t_cap caps, t_args *args);
+
+/*
+** termcaps.c
+*/
+void	ft_termios();
+void	ft_capabilities(t_cap *caps);
 
 /*
 ** utility.c

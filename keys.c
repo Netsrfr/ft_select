@@ -19,36 +19,30 @@ void	ft_select(t_cap caps, t_args *args)
 	ft_print_handler(caps, args);
 }
 
-void	ft_delete(t_cap caps, t_args *args)
+void	ft_delete(t_cap caps, t_args **args)
 {
 	t_args	*ptr;
 
-	ft_cursor(&args);
-	ptr = args->next;
-	if (args->next == args)
-		ft_exit(caps, args);
+	ft_cursor(args);
+	ptr = *args;
+	if ((*args)->next == *args)
+		ft_exit(caps, *args);
 	else
 	{
-		args->next->prev = args->prev;
-		args->prev->next = args->next;
-		if (args->head == 1)
+		(*args)->next->prev = (*args)->prev;
+		(*args)->prev->next = (*args)->next;
+		if ((*args)->head == 1)
 		{
-			args->cursor = 0;
-//			args->head = 0;
-			args->next->cursor = 1;
-			args->next->head = 1;
-//			ptr = args->next;
-			free(args);
+			(*args)->next->cursor = 1;
+			(*args)->next->head = 1;
 		}
 		else
-		{
-			args->prev->cursor = 1;
-//			ptr = args->prev;
-		}
+			(*args)->prev->cursor = 1;
 	}
-	ft_head(&ptr);
+	*args = (*args)->next;
+	free(ptr);
 	ft_init_display(caps);
-	ft_print_handler(caps, ptr);
+	ft_print_handler(caps, *args);
 }
 
 void	ft_return(t_cap caps, t_args *args)
@@ -61,7 +55,7 @@ void	ft_return(t_cap caps, t_args *args)
 	while (args->next->head == 0)
 	{
 		if (args->selected == 1)
-			ft_printf("%s ", args->arg);
+			ft_printf("\n%s ", args->arg);
 		args = args->next;
 	}
 	exit(0);
