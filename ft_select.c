@@ -31,72 +31,71 @@ void	ft_select(t_cap caps, t_args *args)
 	ft_print_handler(caps, args);
 }
 
-void	ft_right(t_cap caps, t_args *args)
+void	ft_exit(t_cap caps, t_args *args)
 {
-	int				row;
-
-	while (args->cursor == 0)
-		args = args->next;
-	args->cursor = 0;
-	row = args->y;
-	args = args->next;
-	while (args->y != row)
 	{
-		args = args->next;
+		//tputs("\033[39m\033[49m\033[2J", 1, ft_fputchar);
+		ft_printe("\033[39m\033[49m\033[2J");
+		ft_printe("%s%s", caps.me, caps.ve);
+		exit(0);
 	}
-	args->cursor = 1;
-	ft_print_handler(caps, args);
 }
 
-void	ft_left(t_cap caps, t_args *args)
+void	ft_delete(t_cap caps, t_args *args)
 {
-	int				row;
+	t_args	*ptr;
 
 	while (args->cursor == 0)
 		args = args->next;
-	args->cursor = 0;
-	row = args->y;
-	args = args->prev;
-	while (args->y != row)
+	if (args->next == args)
+		ft_exit(caps, args);
+	else
 	{
-		args = args->prev;
+		args->next->prev = args->prev;
+		args->prev->next = args->next;
+//		printf("args->next = %s", args->next->arg);
+		//printf("args pn = %s | args np = %s\n", args->prev->next->arg, args->next->prev->arg);
+		//sleep(2);
+		if (args->head == 1)
+		{
+			args->cursor = 0;
+			args->head = 0;
+			args->next->cursor = 1;
+			args->next->head = 1;
+			ptr = args->next;
+//			printf("args pn = %s | args np = %s\n", args->prev->next->arg, args->next->prev->arg);
+//			sleep(3);
+			free(args);
+		}
+		else
+		{
+			args->prev->cursor = 1;
+			ptr = args->prev;
+			//free(args->arg);
+			//free(args);
+		}
 	}
-	args->cursor = 1;
-	ft_print_handler(caps, args);
+	while (ptr->head == 0)
+		ptr = ptr->next;
+	ft_init_display(caps);
+	ft_print_handler(caps, ptr);
 }
 
-void	ft_up(t_cap caps, t_args *args)
+void	ft_return(t_cap caps, t_args *args)
 {
-	int				col;
-
-	while (args->cursor == 0)
+	while (args-> head == 0)
 		args = args->next;
-	args->cursor = 0;
-	col = args->x;
-	args = args->prev;
-	while (args->x != col)
+	if (args->selected == 1)
+		ft_printf("%s ", args->arg);
+	if (args->next == args)
+		exit(0);
+	while (args->next->head == 0)
 	{
-		args = args->prev;
-	}
-	args->cursor = 1;
-	ft_print_handler(caps, args);
-}
-
-void	ft_down(t_cap caps, t_args *args)
-{
-	int				col;
-
-	while (args->cursor == 0)
-		args = args->next;
-	args->cursor = 0;
-	col = args->x;
-	args = args->next;
-	while (args->x != col)
-	{
+		if (args->selected == 1)
+			ft_printf("%s ", args->arg);
 		args = args->next;
 	}
-	args->cursor = 1;
-	ft_print_handler(caps, args);
+	exit(0);
 }
 
 void	ft_read(t_cap caps, t_args *args)
@@ -104,23 +103,21 @@ void	ft_read(t_cap caps, t_args *args)
 	char *line;
 
 	line = ft_memalloc(1024);
+	int	pipe;
 
-	read(1, line, 15);
+	pipe = open("/dev/stdin", O_RDONLY);
+
+	read(pipe, line, 15);
 	if (ft_strcmp(line, "\033") == 0)
-	{
-		tputs("\033[39m\033[49m\033[2J", 1, ft_fputchar);
-		exit(0);
-	}
-	if (line[2] == 65)
-		ft_up(caps, args);
-	if (line[2] == 66)
-		ft_down(caps, args);
-	if (line[2] == 67)
-		ft_right(caps, args);
-	if (line[2] == 68)
-		ft_left(caps, args);
+		ft_exit(caps, args);
+	if (line[2] >= 65 && line[2] <= 68)
+		ft_arrows(line[2], caps, args);
 	if (ft_strcmp(line, " ") == 0)
 		ft_select(caps, args);
+	if (*line == 127)
+		ft_delete(caps, args);
+	if (*line == 10)
+		ft_return(caps, args);
 	ft_read(caps, args);
 }
 
@@ -148,7 +145,11 @@ void	ft_list(char **argv, t_args *head)
 {
 	t_args	*link;
 
-	head->arg = ft_strdup(argv[1]);
+	//head = ft_memalloc(sizeof(t_args));
+	//ft_memcpy(head->arg, argv[1], (ft_strlen(argv[1]) * sizeof(char)));
+	//head->arg = ft_strdup(argv[1]);
+	head->arg = argv[1];
+	//head = ft_link(*argv, (ft_strlen(*argv) * sizeof(char)));
 	head->cursor = 1;
 	head->head = 1;
 	head->selected = 0;
@@ -258,6 +259,8 @@ void	ft_layout(t_cap caps, t_args *args)
 	ft_position(args, win, width);
 	ft_start(&args, win, &start);
 	row = start;
+	if (args->next == args)
+		ft_print_arg(caps, *args, width);
 	while (args->next->head == 0 && row - start < win.ws_ypixel)
 	{
 		while (args->next->head == 0 && args->y == row)
@@ -337,8 +340,8 @@ void ft_init_display(t_cap caps)
 
 void	ft_signal(int sig)
 {
-	printf("TEST\n");
-	sleep(1);
+	g_sig.term.c_lflag |= ~(ICANON|ECHO);
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &g_sig.term);
 	kill(0, SIGTSTP);
 
 }
@@ -354,13 +357,13 @@ void	ft_sigwinch(int sig)
 
 void	ft_allocate_capabilities(t_cap *caps)
 {
-
 	caps->cl = ft_memalloc(16);
 	caps->ce = ft_memalloc(16);
 	caps->us = ft_memalloc(16);
 	caps->me = ft_memalloc(16);
 	caps->mr = ft_memalloc(16);
 	caps->vi = ft_memalloc(16);
+	caps->ve = ft_memalloc(16);
 	caps->kr = ft_memalloc(16);
 	caps->kl = ft_memalloc(16);
 	caps->cm = ft_memalloc(16);
@@ -385,52 +388,74 @@ void	ft_capabilities(t_cap *caps)
 	caps->me = tgetstr("me", &caps->me);
 	caps->mr = tgetstr("mr", &caps->mr);
 	caps->vi = tgetstr("vi", &caps->vi);
+	caps->ve = tgetstr("ve", &caps->ve);
 	caps->kl = tgetstr("kl", &caps->kl);
 	caps->kr = tgetstr("kr", &caps->kr);
 }
 
-void	ft_continue(int sig)
-{
-	ft_termios();
-	ft_init_display(g_sig.caps);
-	ft_print_handler(g_sig.caps, g_sig.args);
-	ft_read(g_sig.caps, g_sig.args);
-}
-
-//TODO: Initiate termios on SIGCONT
-//TODO: Set sigaction SIGTSTP on SIGCONT
-//TODO: Restore terminal settings on SIGTSTP
-
 void	ft_action(void)
 {
 	struct sigaction action;
+
+
 	action.sa_handler = ft_signal;
 	action.sa_flags = SA_RESETHAND;
 	action.sa_mask = SIGTSTP;
 	sigaction(SIGTSTP, &action, NULL);
 }
 
+void	ft_continue(int sig)
+{
+
+	//ft_action();
+//	ft_termios();
+	ft_init_display(g_sig.caps);
+	ft_print_handler(g_sig.caps, g_sig.args);
+	ft_read(g_sig.caps, g_sig.args);
+}
+
+void	ft_actiontest(void)
+{
+	struct sigaction action;
+
+	action.sa_handler = ft_continue;
+	action.sa_flags = SA_RESETHAND;
+	action.sa_mask = SIGCONT;
+	sigaction(SIGCONT, &action, NULL);
+}
+
+
+
+//TODO: Initiate termios on SIGCONT
+//TODO: Set sigaction SIGTSTP on SIGCONT
+//TODO: Restore terminal settings on SIGTSTP
+
+
+
 int main(int argc, char **argv)
 {
-	t_args list;
+	t_args *list;
 	t_cap	caps;
 
-	ft_action();
+	ft_actiontest();
 	signal(SIGWINCH, ft_sigwinch);
 	signal(SIGCONT, ft_continue);
 	ft_capabilities(&caps);
+	list = ft_memalloc(sizeof(t_args));
 	if (argc >= 2)
-		ft_list(argv, &list);
+		ft_list(argv, list);
 	else
 	{
 		ft_printe("ft_select: requires one or more arguments\n");
 		exit(0);
 	}
+
 	ft_termios();
 	g_sig.caps = caps;
 	g_caps = caps;
 	ft_init_display(caps);
-	ft_print_handler(caps, &list);
-	ft_read(caps, &list);
+	ft_print_handler(caps, &(*list));
+	ft_read(caps, &(*list));
+
 	return (0);
 }
