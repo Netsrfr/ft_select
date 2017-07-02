@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   display.c                                            :+:      :+:    :+:   */
+/*   display.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jpfeffer <jpfeffer@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,11 +12,11 @@
 
 #include "ft_select.h"
 
-void		ft_set_win(struct winsize *win)
+void		ft_set_win(struct winsize *w)
 {
-	ioctl(0, TIOCGWINSZ, win);
-	win->ws_xpixel = (unsigned short)(win->ws_col > 11 ? (win->ws_col - 11) : 0);
-	win->ws_ypixel = (unsigned short)(win->ws_col > 4 ? (win->ws_row - 4) : 0);
+	ioctl(0, TIOCGWINSZ, w);
+	w->ws_xpixel = (unsigned short)(w->ws_col > 11 ? (w->ws_col - 11) : 0);
+	w->ws_ypixel = (unsigned short)(w->ws_col > 4 ? (w->ws_row - 4) : 0);
 }
 
 static void	ft_header(struct winsize win, t_cap caps)
@@ -49,11 +49,10 @@ static void	ft_footer(struct winsize win, t_cap caps)
 	}
 	if (win.ws_col >= 94)
 	{
-		tputs(tgoto(caps.cm, ((win.ws_col - 90) / 3) + 41, win.ws_row), 1, ft_fputchar);
+		GOTO_X(((win.ws_col - 90) / 3) + 41);
 		ft_printe("SELECT = SPACE");
-		tputs(tgoto(caps.cm, ((win.ws_col - 90) / 3) * 2 + 59, win.ws_row), 1, ft_fputchar);
+		GOTO_X(((win.ws_col - 90) / 3) * 2 + 59);
 		ft_printe("RETURN = CONFIRM");
-
 	}
 }
 
@@ -61,6 +60,7 @@ void		ft_init_display(t_cap caps)
 {
 	struct winsize	win;
 
+	ft_printe("%s", caps.ti);
 	ioctl(0, TIOCGWINSZ, &win);
 	ft_header(win, caps);
 	ft_footer(win, caps);

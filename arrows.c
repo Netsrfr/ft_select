@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   arrows.c                                            :+:      :+:    :+:   */
+/*   arrows.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jpfeffer <jpfeffer@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -14,10 +14,9 @@
 
 void	ft_right(t_cap caps, t_args *args)
 {
-	int				row;
+	int	row;
 
-	while (args->cursor == 0)
-		args = args->next;
+	ft_cursor(&args);
 	args->cursor = 0;
 	row = args->y;
 	args = args->next;
@@ -31,7 +30,7 @@ void	ft_right(t_cap caps, t_args *args)
 
 void	ft_left(t_cap caps, t_args *args)
 {
-	int				row;
+	int	row;
 
 	while (args->cursor == 0)
 		args = args->next;
@@ -48,7 +47,7 @@ void	ft_left(t_cap caps, t_args *args)
 
 void	ft_up(t_cap caps, t_args *args)
 {
-	int				col;
+	int	col;
 
 	while (args->cursor == 0)
 		args = args->next;
@@ -65,7 +64,7 @@ void	ft_up(t_cap caps, t_args *args)
 
 void	ft_down(t_cap caps, t_args *args)
 {
-	int				col;
+	int	col;
 
 	while (args->cursor == 0)
 		args = args->next;

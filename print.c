@@ -14,9 +14,10 @@
 
 static void	ft_print_arg(t_cap caps, t_args link, size_t width)
 {
-	int i = 0;
-	ft_printe("%s\033[40m\033[33m", caps.me);
+	int	i;
 
+	i = 0;
+	ft_printe("%s\033[40m\033[33m", caps.me);
 	if (link.cursor == 1)
 		ft_printe("%s", caps.us);
 	if (link.selected == 1)
@@ -24,17 +25,7 @@ static void	ft_print_arg(t_cap caps, t_args link, size_t width)
 	ft_printe("%s%s\033[40m\033[33m", link.arg, caps.me);
 	while (i++ + ft_strlen(link.arg) < width)
 		ft_printe(" ");
-}
-
-static void	ft_width(t_args *head, size_t *width)
-{
-	*width = ft_strlen(head->arg);
-	while (head->next->head == 0)
-	{
-		*width = *width < ft_strlen(head->arg) ? ft_strlen(head->arg) : *width;
-		head = head->next;
-	}
-	*width += 4;
+	ft_printe("\033[39m\033[49m");
 }
 
 static void	ft_position(t_args *head, struct winsize win, size_t width)
@@ -81,7 +72,7 @@ static void	ft_start(t_args **head, struct winsize win, int *start)
 static void	ft_layout(t_cap caps, t_args *args, int row, int start)
 {
 	struct winsize	win;
-	size_t width;
+	size_t			width;
 
 	ft_width(args, &width);
 	ft_set_win(&win);
@@ -107,10 +98,9 @@ static void	ft_layout(t_cap caps, t_args *args, int row, int start)
 	}
 }
 
-void	ft_print_handler(t_cap caps, t_args *args)
+void		ft_print_handler(t_cap caps, t_args *args)
 {
 	g_sig.args = args;
-
 	tputs(tgoto(caps.cm, 8, 2), 1, ft_fputchar);
 	ft_head(&args);
 	ft_layout(caps, args, 0, 0);

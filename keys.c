@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   keys.c                                            :+:      :+:    :+:   */
+/*   keys.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jpfeffer <jpfeffer@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -24,7 +24,7 @@ void	ft_delete(t_cap caps, t_args **args)
 	t_args	*ptr;
 
 	ft_cursor(args);
-	ptr = *args;
+	ptr = (*args)->next;
 	if ((*args)->next == *args)
 		ft_exit(caps, *args);
 	else
@@ -33,14 +33,15 @@ void	ft_delete(t_cap caps, t_args **args)
 		(*args)->prev->next = (*args)->next;
 		if ((*args)->head == 1)
 		{
-			(*args)->next->cursor = 1;
-			(*args)->next->head = 1;
+			ptr->cursor = 1;
+			ptr->head = 1;
 		}
 		else
 			(*args)->prev->cursor = 1;
 	}
-	*args = (*args)->next;
-	free(ptr);
+	ft_head(&ptr);
+	free(*args);
+	*args = ptr;
 	ft_init_display(caps);
 	ft_print_handler(caps, *args);
 }
@@ -48,17 +49,42 @@ void	ft_delete(t_cap caps, t_args **args)
 void	ft_return(t_cap caps, t_args *args)
 {
 	ft_head(&args);
+	ft_printe("%s%s%s", caps.me, caps.ve, caps.te);
 	if (args->selected == 1)
 		ft_printf("%s ", args->arg);
 	if (args->next == args)
 		exit(0);
-	while (args->next->head == 0)
+	args = args->next;
+	while (args->head == 0)
 	{
 		if (args->selected == 1)
-			ft_printf("\n%s ", args->arg);
+			ft_printf("%s ", args->arg);
 		args = args->next;
 	}
 	ft_free_capabilities(&caps);
 	ft_free_args(&args);
 	exit(0);
+}
+
+void	ft_exit(t_cap caps, t_args *args)
+{
+	{
+		tputs(tgoto(caps.cm, 0, 0), 1, ft_fputchar);
+		ft_printe("%s%s%s", caps.me, caps.ve, caps.te);
+		ft_free_capabilities(&caps);
+		ft_free_args(&args);
+		exit(0);
+	}
+}
+
+void	ft_keys(char *line, t_cap caps, t_args **args)
+{
+	if (ft_strcmp(line, "\033") == 0)
+		ft_exit(caps, *args);
+	else if (ft_strcmp(line, " ") == 0)
+		ft_select(caps, *args);
+	else if (*line == 127 || ft_strcmp(line, "\033[3~") == 0)
+		ft_delete(caps, args);
+	else if (*line == 10)
+		ft_return(caps, *args);
 }
