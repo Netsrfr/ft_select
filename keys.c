@@ -58,5 +58,7 @@ void	ft_return(t_cap caps, t_args *args)
 			ft_printf("\n%s ", args->arg);
 		args = args->next;
 	}
+	ft_free_capabilities(&caps);
+	ft_free_args(&args);
 	exit(0);
 }

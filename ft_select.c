@@ -16,6 +16,8 @@ void	ft_exit(t_cap caps, t_args *args)
 {
 	{
 		//tputs("\033[39m\033[49m\033[2J", 1, ft_fputchar);
+		ft_free_capabilities(&caps);
+		ft_free_args(&args);
 		ft_printe("\033[39m\033[49m\033[2J");
 		ft_printe("%s%s", caps.me, caps.ve);
 		exit(0);
@@ -93,7 +95,7 @@ void	ft_interrupt(int sig)
 {
 	ft_printe("INTERRUPT\n");
 	sleep(1);
-	exit(SIGINT);
+	kill(0, SIGQUIT);
 }
 
 void	ft_test1()
@@ -132,7 +134,6 @@ void	ft_action(void)
 	action.sa_flags = SA_RESETHAND;
 	action.sa_mask = SIGTSTP;
 	sigaction(SIGTSTP, &action, NULL);
-	ft_test1();
 }
 
 void	ft_actiontest(void)
@@ -150,20 +151,31 @@ void	ft_continue(int sig)
 	ft_printe("WAKING\n");
 	sleep(1);
 	ft_action();
+	ft_test1();
 	ft_termios();
 	ft_init_display(g_sig.caps);
 	ft_print_handler(g_sig.caps, g_sig.args);
 	ft_read(g_sig.caps, g_sig.args);
 }
 
-
-
 //TODO: Initiate termios on SIGCONT
 //TODO: Set sigaction SIGTSTP on SIGCONT
 //TODO: Restore terminal settings on SIGTSTP
 
 
+void	ft_free_args(t_args **args)
+{
+	t_args	*ptr;
 
+	ft_head(args);
+	while ((*args)->next->head == 0)
+	{
+		ptr = *args;
+		*args = (*args)->next;
+		free(ptr);
+	}
+	free(*args);
+}
 
 
 int main(int argc, char **argv)

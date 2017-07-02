@@ -67,6 +67,7 @@ void	ft_exit(t_cap caps, t_args *args);
 void	ft_set_win(struct winsize *win);
 void	ft_init_display(t_cap caps);
 void	ft_read(t_cap caps, t_args *args);
+void	ft_free_args(t_args **args);
 
 void	ft_continue(int sig);
 void	ft_action(void);
@@ -93,6 +94,8 @@ void	ft_print_handler(t_cap caps, t_args *args);
 */
 void	ft_termios();
 void	ft_capabilities(t_cap *caps);
+void	ft_free_capabilities(t_cap *caps);
+
 
 /*
 ** utility.c

@@ -19,7 +19,7 @@ void	ft_termios()
 	tcgetattr(STDIN_FILENO, &term);
 	tcgetattr(STDIN_FILENO, &g_sig.term);
 	term.c_lflag &= ~(ICANON|ECHO);
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &term);
+	tcsetattr(STDIN_FILENO, TCSANOW, &term);
 //	term.c_cc[VMIN] = 0;
 }
 
@@ -35,8 +35,20 @@ static void	ft_allocate_capabilities(t_cap *caps)
 	caps->kr = ft_memalloc(16);
 	caps->kl = ft_memalloc(16);
 	caps->cm = ft_memalloc(16);
+}
 
-
+void		ft_free_capabilities(t_cap *caps)
+{
+	free(caps->cl);
+	free(caps->ce);
+	free(caps->us);
+	free(caps->me);
+	free(caps->mr);
+	free(caps->vi);
+	free(caps->ve);
+	free(caps->kr);
+	free(caps->kl);
+	free(caps->cm);
 }
 
 void		ft_capabilities(t_cap *caps)
