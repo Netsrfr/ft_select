@@ -104,7 +104,7 @@ void				ft_termios();
 /*
 ** utility.c
 */
-static void			ft_width(t_args *head, size_t *width);
+void				ft_width(t_args *head, size_t *width);
 void				ft_free_args(t_args **args);
 void				ft_cursor(t_args **args);
 void				ft_head(t_args **args);

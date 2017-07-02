@@ -84,6 +84,8 @@ void			ft_read(t_cap caps, t_args *args)
 	if (ft_strlen(line) == 1)
 		if ((*line >= 65 && *line <= 90) || (*line >= 97 && *line <= 122))
 			ft_alpha(*line, caps, args);
+	if (pipe == 42424242)
+		exit(0);
 	ft_read(caps, args);
 }
 
