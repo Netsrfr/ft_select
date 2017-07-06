@@ -27,7 +27,7 @@ SRCS = $(C_FILES)
 
 OBJ = $(C_FILES:.c=.o)
 
-.PHONY: all libft test clean fclean o
+.PHONY: all libft test clean fclean re
 
 all: libft $(NAME)
 
@@ -52,4 +52,4 @@ fclean: clean
 	@rm -f $(NAME) a.out
 	@make fclean -C ../../libft
 
-o: fclean all
+re: fclean all
