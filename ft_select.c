@@ -33,6 +33,7 @@ static t_args	*ft_link(void const *content, size_t content_size)
 {
 	t_args	*link;
 
+	//link = NULL;
 	if (!(link = ft_memalloc(sizeof(t_args))))
 		return (0);
 	link->arg = (void*)content;

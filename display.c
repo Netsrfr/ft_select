@@ -37,9 +37,9 @@ void		ft_set_win(struct winsize *w)
 static void	ft_header(struct winsize win, t_cap caps)
 {
 	tputs(tgoto(caps.cm, 0, 0), 1, ft_fputchar);
-	ft_printe("%s\033[40m%s\033[44m\033[37m", caps.me, caps.cl);
+	ft_printe("%s%s%s", caps.me, ft_color(), caps.cl);
 	tputs(tgoto(caps.cm, 0, 0), 1, ft_fputchar);
-	ft_printe("%s\033[44m%s\033[37m", caps.me, caps.ce);
+	ft_printe("%s%s", ft_menu(), caps.ce);
 	if (win.ws_col >= 9)
 	{
 		tputs(tgoto(caps.cm, (win.ws_col / 2 - 4), 0), 1, ft_fputchar);
@@ -48,7 +48,7 @@ static void	ft_header(struct winsize win, t_cap caps)
 	tputs(tgoto(caps.cm, 4, 0), 1, ft_fputchar);
 	if (win.ws_col > 20)
 	{
-		ft_printe("\033[37m%sC%solor", caps.us, caps.ue);
+		ft_printe("%sC%solor", caps.us, caps.ue);
 	}
 
 }
@@ -56,7 +56,7 @@ static void	ft_header(struct winsize win, t_cap caps)
 static void	ft_footer(struct winsize win, t_cap caps)
 {
 	tputs(tgoto(caps.cm, 0, win.ws_row), 1, ft_fputchar);
-	ft_printe("%s\033[44m%s\033[37m", caps.me, caps.ce);
+	ft_printe("%s", caps.ce);
 	tputs(tgoto(caps.cm, 4, win.ws_row), 1, ft_fputchar);
 	if (win.ws_col >= 18)
 	{

@@ -25,6 +25,7 @@
 # include <fcntl.h>
 # define CE "ft_select: \x1b[31merror:\x1b[39m"
 # define GOTO(x, y) (tputs(tgoto(caps.cm, x, y), 1, ft_fputchar))
+# define DEF_COL "\033[39m\033[49m"
 # define C1 "\033[40m\033[33m"
 # define M1 "\033[44m\033[37m"
 
@@ -114,4 +115,8 @@ void				ft_width(t_args *head, size_t *width);
 void				ft_free_args(t_args **args);
 void				ft_cursor(t_args **args);
 void				ft_head(t_args **args);
+
+char *ft_color(void);
+char *ft_menu(void);
+
 #endif

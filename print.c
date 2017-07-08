@@ -17,7 +17,7 @@ static void	ft_print_arg(t_cap caps, t_args link, size_t width)
 	int	i;
 
 	i = 0;
-	ft_printe("%s\033[40m\033[33m", caps.me);
+	ft_printe("%s%s", caps.me, ft_color());
 	if (link.cursor == 1)
 		ft_printe("%s", caps.us);
 	if (link.selected == 1)
@@ -25,7 +25,7 @@ static void	ft_print_arg(t_cap caps, t_args link, size_t width)
 	ft_printe("%s%s\033[40m\033[33m", link.arg, caps.me);
 	while (i++ + ft_strlen(link.arg) < width)
 		ft_printe(" ");
-	ft_printe("\033[39m\033[49m");
+	ft_printe(DEF_COL);
 }
 
 static void	ft_position(t_args *head, struct winsize win, size_t width)
