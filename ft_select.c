@@ -70,6 +70,27 @@ static void		ft_list(char **argv, t_args **link)
 	ft_head(link);
 }
 
+void			ft_colors(t_cap caps)
+{
+	GOTO(4, 0);
+	ft_printe("\033[44m\033[37m%sCOLOR", caps.mr);
+	GOTO(4, 1);
+	ft_printe("┏━━━━━━━━━━━┓");
+	GOTO(4, 2);
+	ft_printe("┃  COLOR 1  ┃");
+	GOTO(4, 3);
+	ft_printe("┃  COLOR 2  ┃");
+	GOTO(4, 4);
+	ft_printe("┃  COLOR 3  ┃");
+	GOTO(4, 5);
+	ft_printe("┃  COLOR 4  ┃");
+	GOTO(4, 6);
+	ft_printe("┗━━━━━━━━━━━┛");
+
+
+
+}
+
 void			ft_read(t_cap caps, t_args *args)
 {
 	char	*line;
@@ -78,6 +99,8 @@ void			ft_read(t_cap caps, t_args *args)
 	line = ft_memalloc(1024);
 	pipe = open("/dev/stdin", O_RDONLY);
 	read(pipe, line, 15);
+	if (ft_strcmp(line, "ç") == 0)
+		ft_colors(caps);
 	if (line[0] == '\033' && line[2] >= 65 && line[2] <= 68)
 		ft_arrows(line[2], caps, args);
 	ft_keys(line, caps, &args);
@@ -86,13 +109,16 @@ void			ft_read(t_cap caps, t_args *args)
 			ft_alpha(*line, caps, args);
 	if (pipe == 42424242)
 		exit(0);
-	ft_read(caps, args);
+	free(line);
+	close(pipe);
+	//ft_read(caps, args);
 }
 
 int				main(int argc, char **argv)
 {
 	t_args	*head;
 	t_cap	caps;
+
 
 	ft_capabilities(&caps);
 	g_sig.caps = caps;
@@ -108,6 +134,7 @@ int				main(int argc, char **argv)
 	ft_termios();
 	ft_init_display(caps);
 	ft_print_handler(caps, (head));
+	while(1)
 	ft_read(caps, (head));
 	return (0);
 }

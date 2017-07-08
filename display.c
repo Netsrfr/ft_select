@@ -12,6 +12,21 @@
 
 #include "ft_select.h"
 
+char *ft_color(void)
+{
+	g_color = 1;
+	//if (g_color == 1)
+	return(C1);
+}
+
+char *ft_menu(void)
+{
+	g_color = 1;
+	//if (g_color == 1)
+	return(M1);
+}
+
+
 void		ft_set_win(struct winsize *w)
 {
 	ioctl(0, TIOCGWINSZ, w);
@@ -30,6 +45,12 @@ static void	ft_header(struct winsize win, t_cap caps)
 		tputs(tgoto(caps.cm, (win.ws_col / 2 - 4), 0), 1, ft_fputchar);
 		ft_printe("ft_select");
 	}
+	tputs(tgoto(caps.cm, 4, 0), 1, ft_fputchar);
+	if (win.ws_col > 20)
+	{
+		ft_printe("\033[37m%sC%solor", caps.us, caps.ue);
+	}
+
 }
 
 static void	ft_footer(struct winsize win, t_cap caps)
@@ -49,9 +70,9 @@ static void	ft_footer(struct winsize win, t_cap caps)
 	}
 	if (win.ws_col >= 94)
 	{
-		GOTO_X(((win.ws_col - 90) / 3) + 41);
+		GOTO(((win.ws_col - 90) / 3) + 41, win.ws_row);
 		ft_printe("SELECT = SPACE");
-		GOTO_X(((win.ws_col - 90) / 3) * 2 + 59);
+		GOTO(((win.ws_col - 90) / 3) * 2 + 59, win.ws_row);
 		ft_printe("RETURN = CONFIRM");
 	}
 }
@@ -64,5 +85,6 @@ void		ft_init_display(t_cap caps)
 	ioctl(0, TIOCGWINSZ, &win);
 	ft_header(win, caps);
 	ft_footer(win, caps);
-	ft_printe("%s%s\033[40m\033[33m", caps.me, caps.vi);
+	ft_printe("%s%s%s", caps.me, caps.vi, ft_color());
 }
+
