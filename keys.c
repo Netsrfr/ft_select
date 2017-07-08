@@ -70,13 +70,20 @@ void	ft_return(t_cap caps, t_args *args)
 
 void	ft_exit(t_cap caps, t_args *args)
 {
+	struct winsize	win;
+
+	ioctl(0, TIOCGWINSZ, &win);
+	if (win.ws_col < 40 || win.ws_row < 12 || ft_confirm(win, caps) == 0)
 	{
 		tputs(tgoto(caps.cm, 0, 0), 1, ft_fputchar);
 		ft_printe("%s%s%s", caps.me, caps.ve, caps.te);
 		ft_free_capabilities(&caps);
 		ft_free_args(&args);
+		ft_free_colors();
 		exit(0);
 	}
+	ft_init_display(caps);
+	ft_print_handler(caps, args);
 }
 
 void	ft_keys(char *line, t_cap caps, t_args **args)

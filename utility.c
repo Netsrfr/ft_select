@@ -38,6 +38,18 @@ void	ft_free_args(t_args **args)
 	free(*args);
 }
 
+void	ft_free_colors(void)
+{
+	free(g_colors->next->next->next->colors);
+	free(g_colors->next->next->next);
+	free(g_colors->next->next->colors);
+	free(g_colors->next->next);
+	free(g_colors->next->colors);
+	free(g_colors->next);
+	free(g_colors->colors);
+	free(g_colors);
+}
+
 void	ft_width(t_args *head, size_t *width)
 {
 	*width = ft_strlen(head->arg);

@@ -33,7 +33,6 @@ static t_args	*ft_link(void const *content, size_t content_size)
 {
 	t_args	*link;
 
-	//link = NULL;
 	if (!(link = ft_memalloc(sizeof(t_args))))
 		return (0);
 	link->arg = (void*)content;
@@ -71,28 +70,7 @@ static void		ft_list(char **argv, t_args **link)
 	ft_head(link);
 }
 
-void			ft_colors(t_cap caps)
-{
-	GOTO(4, 0);
-	ft_printe("\033[44m\033[37m%sCOLOR", caps.mr);
-	GOTO(4, 1);
-	ft_printe("┏━━━━━━━━━━━┓");
-	GOTO(4, 2);
-	ft_printe("┃  COLOR 1  ┃");
-	GOTO(4, 3);
-	ft_printe("┃  COLOR 2  ┃");
-	GOTO(4, 4);
-	ft_printe("┃  COLOR 3  ┃");
-	GOTO(4, 5);
-	ft_printe("┃  COLOR 4  ┃");
-	GOTO(4, 6);
-	ft_printe("┗━━━━━━━━━━━┛");
-
-
-
-}
-
-void			ft_read(t_cap caps, t_args *args)
+static int		ft_read(t_cap caps, t_args *args, t_color *colors)
 {
 	char	*line;
 	int		pipe;
@@ -101,28 +79,34 @@ void			ft_read(t_cap caps, t_args *args)
 	pipe = open("/dev/stdin", O_RDONLY);
 	read(pipe, line, 15);
 	if (ft_strcmp(line, "ç") == 0)
-		ft_colors(caps);
-	if (line[0] == '\033' && line[2] >= 65 && line[2] <= 68)
+	{
+		ft_colors(caps, colors, pipe);
+		ft_print_handler(caps, args);
+	}
+	else if (line[0] == '\033' && line[2] >= 65 && line[2] <= 68)
 		ft_arrows(line[2], caps, args);
-	ft_keys(line, caps, &args);
-	if (ft_strlen(line) == 1)
+	else if (ft_strlen(line) == 1)
+	{
 		if ((*line >= 65 && *line <= 90) || (*line >= 97 && *line <= 122))
 			ft_alpha(*line, caps, args);
-	if (pipe == 42424242)
-		exit(0);
+	}
+	ft_keys(line, caps, &args);
 	free(line);
 	close(pipe);
-	//ft_read(caps, args);
+	return (1);
 }
 
 int				main(int argc, char **argv)
 {
-	t_args	*head;
+	int		loop;
 	t_cap	caps;
+	t_args	*head;
+	t_color	*colors;
 
-
+	loop = 1;
 	ft_capabilities(&caps);
 	g_sig.caps = caps;
+	ft_printe("%s", caps.ti);
 	ft_sigaction();
 	if (argc >= 2)
 		ft_list(argv, &head);
@@ -133,9 +117,10 @@ int				main(int argc, char **argv)
 		exit(0);
 	}
 	ft_termios();
+	ft_init_colors(&colors);
 	ft_init_display(caps);
 	ft_print_handler(caps, (head));
-	while(1)
-	ft_read(caps, (head));
+	while (loop)
+		loop = ft_read(caps, head, colors);
 	return (0);
 }

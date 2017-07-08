@@ -12,21 +12,6 @@
 
 #include "ft_select.h"
 
-char *ft_color(void)
-{
-	g_color = 1;
-	//if (g_color == 1)
-	return(C1);
-}
-
-char *ft_menu(void)
-{
-	g_color = 1;
-	//if (g_color == 1)
-	return(M1);
-}
-
-
 void		ft_set_win(struct winsize *w)
 {
 	ioctl(0, TIOCGWINSZ, w);
@@ -50,7 +35,6 @@ static void	ft_header(struct winsize win, t_cap caps)
 	{
 		ft_printe("%sC%solor", caps.us, caps.ue);
 	}
-
 }
 
 static void	ft_footer(struct winsize win, t_cap caps)
@@ -81,10 +65,8 @@ void		ft_init_display(t_cap caps)
 {
 	struct winsize	win;
 
-	ft_printe("%s", caps.ti);
 	ioctl(0, TIOCGWINSZ, &win);
 	ft_header(win, caps);
 	ft_footer(win, caps);
 	ft_printe("%s%s%s", caps.me, caps.vi, ft_color());
 }
-

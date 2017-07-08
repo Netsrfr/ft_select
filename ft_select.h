@@ -26,9 +26,15 @@
 # define CE "ft_select: \x1b[31merror:\x1b[39m"
 # define GOTO(x, y) (tputs(tgoto(caps.cm, x, y), 1, ft_fputchar))
 # define DEF_COL "\033[39m\033[49m"
-# define C1 "\033[40m\033[33m"
+# define C1 "\033[40m\033[38;5;11m"
 # define M1 "\033[44m\033[37m"
-
+# define C2 M1
+# define M2 "\033[40m\033[37m"
+# define C3 "\033[40m\033[37m"
+# define M3 M1
+# define C4 "\033[48;5;8m\033[37m"
+# define M4 "\033[48;5;7m\033[30m"
+# define CX "\033[48;5;168m\033[37m"
 
 typedef struct		s_args
 {
@@ -66,8 +72,16 @@ typedef struct		s_sig
 	struct termios	term;
 }					t_sig;
 
-t_sig	g_sig;
-int g_color;
+typedef struct		s_color
+{
+	int				selected;
+	char			*colors;
+	struct s_color	*next;
+}					t_color;
+
+t_sig				g_sig;
+t_color				*g_colors;
+int					g_color;
 
 /*
 ** arrows.c
@@ -75,15 +89,23 @@ int g_color;
 void				ft_arrows(char line, t_cap caps, t_args *args);
 
 /*
+** bonus.c
+*/
+int					ft_confirm(struct winsize win, t_cap caps);
+char				*ft_color(void);
+char				*ft_menu(void);
+
+/*
+** colors.c
+*/
+void				ft_colors(t_cap caps, t_color *colors, int pipe);
+void				ft_init_colors(t_color **color1);
+
+/*
 ** display.c
 */
 void				ft_set_win(struct winsize *w);
 void				ft_init_display(t_cap caps);
-
-/*
-** ft_select.c
-*/
-void				ft_read(t_cap caps, t_args *args);
 
 /*
 ** keys.c
@@ -115,8 +137,5 @@ void				ft_width(t_args *head, size_t *width);
 void				ft_free_args(t_args **args);
 void				ft_cursor(t_args **args);
 void				ft_head(t_args **args);
-
-char *ft_color(void);
-char *ft_menu(void);
-
+void				ft_free_colors(void);
 #endif

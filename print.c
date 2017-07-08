@@ -22,7 +22,7 @@ static void	ft_print_arg(t_cap caps, t_args link, size_t width)
 		ft_printe("%s", caps.us);
 	if (link.selected == 1)
 		ft_printe("%s", caps.mr);
-	ft_printe("%s%s\033[40m\033[33m", link.arg, caps.me);
+	ft_printe("%s%s%s", link.arg, caps.me, ft_color());
 	while (i++ + ft_strlen(link.arg) < width)
 		ft_printe(" ");
 	ft_printe(DEF_COL);

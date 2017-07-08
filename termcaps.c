@@ -82,5 +82,4 @@ void		ft_capabilities(t_cap *caps)
 	caps->kr = tgetstr("kr", &caps->kr);
 	caps->ti = tgetstr("ti", &caps->ti);
 	caps->te = tgetstr("te", &caps->te);
-
 }

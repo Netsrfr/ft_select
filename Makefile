@@ -13,7 +13,7 @@
 NAME = ft_select
 
 C_FILES = ft_select.c arrows.c keys.c utility.c termcaps.c display.c print.c \
-			signals.c
+			signals.c colors.c bonus.c
 
 LIBFT		=	./libft/libft.a
 PRINTF		=	./libraries/ft_printf/libftprintf.a
