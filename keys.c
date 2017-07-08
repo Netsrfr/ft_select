@@ -16,6 +16,8 @@ void	ft_select(t_cap caps, t_args *args)
 {
 	ft_cursor(&args);
 	args->selected = args->selected == 0 ? 1 : 0;
+	args->cursor = 0;
+	args->next->cursor = 1;
 	ft_print_handler(caps, args);
 }
 

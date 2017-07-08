@@ -23,8 +23,11 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <fcntl.h>
-# define CE ("ft_select: \x1b[31merror:\x1b[39m")
-# define GOTO_X(x) (tputs(tgoto(caps.cm, x, win.ws_row), 1, ft_fputchar))
+# define CE "ft_select: \x1b[31merror:\x1b[39m"
+# define GOTO(x, y) (tputs(tgoto(caps.cm, x, y), 1, ft_fputchar))
+# define C1 "\033[40m\033[33m"
+# define M1 "\033[44m\033[37m"
+
 
 typedef struct		s_args
 {
@@ -44,6 +47,7 @@ typedef struct		s_cap
 	char			*cl;
 	char			*ce;
 	char			*us;
+	char			*ue;
 	char			*mr;
 	char			*me;
 	char			*vi;
@@ -60,7 +64,9 @@ typedef struct		s_sig
 	t_args			*args;
 	struct termios	term;
 }					t_sig;
+
 t_sig	g_sig;
+int g_color;
 
 /*
 ** arrows.c
