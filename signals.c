@@ -43,9 +43,9 @@ static void	ft_sigcont(int sig)
 {
 	if (sig == SIGCONT)
 	{
+		ft_printe(g_sig.caps.ti);
 		ft_sigaction();
 		ft_termios();
-		ft_printe(g_sig.caps.ti);
 		ft_init_display(g_sig.caps);
 		ft_print_handler(g_sig.caps, g_sig.args);
 	}

@@ -92,6 +92,7 @@ void				ft_arrows(char line, t_cap caps, t_args *args);
 ** bonus.c
 */
 int					ft_confirm(struct winsize win, t_cap caps);
+void				ft_init_colors(t_color **color1);
 char				*ft_color(void);
 char				*ft_menu(void);
 
@@ -99,7 +100,6 @@ char				*ft_menu(void);
 ** colors.c
 */
 void				ft_colors(t_cap caps, t_color *colors, int pipe);
-void				ft_init_colors(t_color **color1);
 
 /*
 ** display.c

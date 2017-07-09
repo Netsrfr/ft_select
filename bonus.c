@@ -84,3 +84,29 @@ int			ft_confirm(struct winsize win, t_cap caps)
 	free(line);
 	return (flag);
 }
+
+void		ft_init_colors(t_color **color1)
+{
+	t_color *color2;
+	t_color *color3;
+	t_color *color4;
+
+	g_color = 1;
+	color4 = ft_memalloc(sizeof(t_color));
+	color4->selected = 0;
+	color4->colors = ft_strdup("GRAY AND WHITE  ");
+	color4->next = NULL;
+	color3 = ft_memalloc(sizeof(t_color));
+	color3->selected = 0;
+	color3->colors = ft_strdup("BLACK AND WHITE ");
+	color3->next = color4;
+	color2 = ft_memalloc(sizeof(t_color));
+	color2->selected = 0;
+	color2->colors = ft_strdup("BLUE AND WHITE  ");
+	color2->next = color3;
+	*color1 = ft_memalloc(sizeof(t_color));
+	(*color1)->selected = 1;
+	(*color1)->colors = ft_strdup("BLACK AND YELLOW");
+	(*color1)->next = color2;
+	g_colors = *color1;
+}
