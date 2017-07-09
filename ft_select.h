@@ -111,7 +111,7 @@ void				ft_init_display(t_cap caps);
 ** keys.c
 */
 void				ft_keys(char *line, t_cap caps, t_args **args);
-void				ft_exit(t_cap caps, t_args *args);
+void				ft_exit(t_cap caps, t_args *args, int caller);
 
 /*
 ** print.c

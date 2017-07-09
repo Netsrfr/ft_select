@@ -31,7 +31,7 @@ static void	ft_header(struct winsize win, t_cap caps)
 		ft_printe("ft_select");
 	}
 	tputs(tgoto(caps.cm, 4, 0), 1, ft_fputchar);
-	if (win.ws_col > 20)
+	if (win.ws_col >= 40)
 	{
 		ft_printe("%sC%solor", caps.us, caps.ue);
 	}

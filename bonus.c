@@ -79,5 +79,6 @@ int			ft_confirm(struct winsize win, t_cap caps)
 			break ;
 		flag = flag == 0 ? 1 : 0;
 	}
+	free(line);
 	return (flag);
 }

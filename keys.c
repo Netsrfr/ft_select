@@ -28,7 +28,7 @@ void	ft_delete(t_cap caps, t_args **args)
 	ft_cursor(args);
 	ptr = (*args)->next;
 	if ((*args)->next == *args)
-		ft_exit(caps, *args);
+		ft_exit(caps, *args, 0);
 	else
 	{
 		(*args)->next->prev = (*args)->prev;
@@ -68,12 +68,13 @@ void	ft_return(t_cap caps, t_args *args)
 	exit(0);
 }
 
-void	ft_exit(t_cap caps, t_args *args)
+void	ft_exit(t_cap caps, t_args *args, int caller)
 {
 	struct winsize	win;
 
 	ioctl(0, TIOCGWINSZ, &win);
-	if (win.ws_col < 40 || win.ws_row < 12 || ft_confirm(win, caps) == 0)
+	if (caller == 0 || win.ws_col < 40 || win.ws_row < 12 || \
+	ft_confirm(win, caps) == 0)
 	{
 		tputs(tgoto(caps.cm, 0, 0), 1, ft_fputchar);
 		ft_printe("%s%s%s", caps.me, caps.ve, caps.te);
@@ -89,7 +90,7 @@ void	ft_exit(t_cap caps, t_args *args)
 void	ft_keys(char *line, t_cap caps, t_args **args)
 {
 	if (ft_strcmp(line, "\033") == 0)
-		ft_exit(caps, *args);
+		ft_exit(caps, *args, 1);
 	else if (ft_strcmp(line, " ") == 0)
 		ft_select(caps, *args);
 	else if (*line == 127 || ft_strcmp(line, "\033[3~") == 0)

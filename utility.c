@@ -29,7 +29,8 @@ void	ft_free_args(t_args **args)
 	t_args	*ptr;
 
 	ft_head(args);
-	while ((*args)->next->head == 0)
+	*args = (*args)->next;
+	while ((*args)->head == 0)
 	{
 		ptr = *args;
 		*args = (*args)->next;

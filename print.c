@@ -23,6 +23,8 @@ static void	ft_print_arg(t_cap caps, t_args link, size_t width)
 	if (link.selected == 1)
 		ft_printe("%s", caps.mr);
 	ft_printe("%s%s%s", link.arg, caps.me, ft_color());
+	if (link.next->head == 1)
+		ft_printe("%s", caps.ce);
 	while (i++ + ft_strlen(link.arg) < width)
 		ft_printe(" ");
 	ft_printe(DEF_COL);
