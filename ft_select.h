@@ -34,7 +34,7 @@
 # define M3 M1
 # define C4 "\033[48;5;8m\033[37m"
 # define M4 "\033[48;5;7m\033[30m"
-# define CX "\033[48;5;168m\033[37m"
+# define CX "\033[48;5;168m\033[30m"
 
 typedef struct		s_args
 {

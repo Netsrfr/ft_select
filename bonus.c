@@ -43,6 +43,8 @@ static void	ft_confirmation_window(struct winsize win, t_cap caps)
 	i = 1;
 	GOTO(win.ws_xpixel - 18, win.ws_ypixel - 5);
 	ft_printe("%s╔══════════════════════════════════╗", ft_menu());
+	GOTO(win.ws_xpixel - 18, (win.ws_ypixel - 5) + i++);
+	ft_printe("║ %s%s%s ║", CX, " ARE YOU SURE YOU WANT TO EXIT? ", ft_menu());
 	while (i <= 6)
 	{
 		GOTO(win.ws_xpixel - 18, (win.ws_ypixel - 5) + i++);

@@ -106,7 +106,7 @@ int				main(int argc, char **argv)
 		ft_list(argv, &head);
 	else
 	{
-		ft_printe("%s requires one or more arguments\n", CE);
+		ft_printe("%s%s requires one or more arguments\n", caps.te, CE);
 		ft_free_capabilities(&caps);
 		exit(0);
 	}
